@@ -16,3 +16,18 @@ class GroupSerializers(serializers.ModelSerializer):
 	class Meta:
 		model = Group
 		fields = '__all__'
+
+class ClienteSerializers(serializers.ModelSerializer):
+	class Meta:
+		model = Cliente
+		fields = '__all__'
+
+class SolicitudSerializers(serializers.ModelSerializer):
+	class Meta:
+		model = Solicitud
+		fields = '__all__'
+
+class DocumentoSerializers(serializers.ModelSerializer):
+	class Meta:
+		model = Documento
+		fields = '__all__'

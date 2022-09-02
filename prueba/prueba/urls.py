@@ -22,9 +22,13 @@ router = routers.DefaultRouter()
 router.register(r'abogado',views.AbogadoViewSet)
 router.register(r'user',views.UserViewSet)
 router.register(r'group',views.GroupViewSet)
+router.register(r'cliente', views.ClienteViewSet)
+router.register(r'solicitud', views.SolicitudViewSet)
+router.register(r'documento', views.DocumentosViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('gestion/api/', include(router.urls)),
+    path('token/', include('api.token.router')),
 ]
 
