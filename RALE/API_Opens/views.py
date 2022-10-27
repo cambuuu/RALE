@@ -1,3 +1,34 @@
+from rest_framework import serializers,viewsets
+from django.contrib.auth.models import User,Group
+from .models import *
+from .serializers import *
+from rest_framework.response import Response
+from rest_framework.decorators import api_view
 from django.shortcuts import render
 
+
 # Create your views here.
+
+class ClienteViewSet(viewsets.ModelViewSet):
+	queryset = Cliente.objects.all()
+	serializer_class = ClienteSerializers
+
+class PlantillaViewSet(viewsets.ModelViewSet):
+	queryset = Plantilla.objects.all()
+	serializer_class = PlantillaSerializers
+
+class SolicitudViewSet(viewsets.ModelViewSet):
+	queryset = Solicitud.objects.all()
+	serializer_class = SolicitudSerializers
+
+class DocumentoViewSet(viewsets.ModelViewSet):
+	queryset = Documento.objects.all()
+	serializer_class = DocumentoSerializers
+
+class UserViewSet(viewsets.ModelViewSet):
+	queryset = User.objects.all()
+	serializer_class = UserSerializers
+
+class GroupViewSet(viewsets.ModelViewSet):
+	queryset = Group.objects.all()
+	serializer_class = GroupSerializers
