@@ -1,6 +1,5 @@
 #pip install -U scikit-learn scipy matplotlib
-import smtplib,ssl
-from email.message import EmailMessage
+import imaplib, email
 import joblib
 
 def clasificar(correo):
@@ -11,22 +10,28 @@ def clasificar(correo):
     valor = clasificador.predict(data)
     return valor
 
-def Enviar_Email(nombre, cuerpo, asunto):
-        email_sender = 'portafolio.duocuc.2022@gmail.com'
-        email_password = 'mzfzqybucciwgmou'
-        email_receiver = nombre
+def connect(email):
+    imap = imaplib.IMAP4_SSL("imap.gmail.com")
+    password= 'mzfzqybucciwgmou'
+    imap.login(email, password)
+    return imap
 
-        subject = asunto
-        body = cuerpo
+def disconnect(imap):
+    imap.logout()
 
-        em =EmailMessage()
-        em['front'] = email_sender
-        em ['to'] = email_receiver
-        em['subject'] = subject
-        em.set_content(body)
+def mover_email(id_email):
+    imap = connect('portafolio.duocuc.2022@gmail.com')
+    imap.select(mailbox = '"INBOX"', readonly = False)
+    resp, items = imap.search(None, 'All')
+    email_ids  = items[0].split()
+    latest_email_id = [email_ids[-2],email_ids[-1]]
 
-        context = ssl.create_default_context()
+    for uid in latest_email_id:
+        if uid == id_email:
+            resp, data = imap.fetch(uid, '(RFC822)')
+            raw_email = data[0][1]
+            raw_email_string = raw_email.decode('utf-8')
+            msg_uid = email.message_from_string(raw_email_string)
 
-        with smtplib.SMTP_SSL('smtp.gmail.com', 465, context=context) as smtp:
-                smtp.login(email_sender,email_password)
-                smtp.sendmail(email_sender,email_receiver, em.as_string())
+            imap.store(uid,'+X-GM-LABELS', '"Aplica"')
+    disconnect(imap)

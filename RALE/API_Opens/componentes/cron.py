@@ -2,7 +2,8 @@ import imaplib
 import email
 from email.header import decode_header
 from db import *
-from machine import *
+from machine import clasificar,mover_email
+from gmail import crear_borrador
 
 def Automatizacion():
     username = 'portafolio.duocuc.2022@gmail.com'
@@ -40,6 +41,7 @@ def Automatizacion():
                             temp.append(mensaje["Date"])
                             temp.append(subject)
                             temp.append(body)
+                            temp.append(str(i).encode('ASCII'))
         data.append(temp)
     valor = []
     plantilla = consulta_plantilla()
@@ -52,8 +54,10 @@ def Automatizacion():
                 nombre = valor[0]
                 if valor[i] == 'Despido':
                     asunto = plantilla[1]
-                    cuerpo = plantilla[2]
-                    Enviar_Email(nombre = nombre,cuerpo = cuerpo, asunto = asunto)
+                    uid = valor[4]
+                    cuerpo = "En relacion con el correo\n"+valor[2]+"\n"+plantilla[2]
+                    crear_borrador(cuerpo = cuerpo,cliente = nombre, asunto = asunto)
+                    mover_email(id_email = uid)
             migracion_datos(datos = valor)
     imap.close()
     imap.logout()

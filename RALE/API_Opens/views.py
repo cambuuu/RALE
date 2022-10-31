@@ -32,3 +32,27 @@ class UserViewSet(viewsets.ModelViewSet):
 class GroupViewSet(viewsets.ModelViewSet):
 	queryset = Group.objects.all()
 	serializer_class = GroupSerializers
+
+@api_view(['GET'])
+def Detalle_bitacora_solicitud(request):
+	bitacora_solicitud = Bitacora_solicitud.objects.all()
+	serializer = BitacoraSolicitudSerializers(bitacora_solicitud, many = False)
+	return Response(serializer.data)
+
+@api_view(['GET'])
+def Detalle_bitacora_usuario(request):
+	bitacora_usuario = Bitacora_usuario.objects.all()
+	serializer = BitacoraUsuarioSerializers(bitacora_usuario, many = False)
+	return Response(serializer.data)
+
+@api_view(['GET'])
+def Detalle_abogado(request):
+	abogado = Abogado.objects.all()
+	serializer = AbogadoSerializers(abogado, many = False)
+	return Response(serializer.data)
+
+@api_view(['GET'])
+def Detalle_email(request):
+	email = Email.objects.all()
+	serializer = EmailSerializers(email, many = False)
+	return Response(serializer.data)

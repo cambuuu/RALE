@@ -32,3 +32,22 @@ class GroupSerializers(serializers.ModelSerializer):
                 model = Group
                 fields = '__all__'
 
+class BitacoraUsuarioSerializers(serializers.ModelSerializer):
+	class Meta:
+		model = Bitacora_usuario
+		fields = '__all__'
+
+class BitacoraSolicitudSerializers(serializers.ModelSerializer):
+	class Meta:
+		model = Bitacora_solicitud
+		fields = '__all__'
+
+class AbogadoSerializers(serializers.ModelSerializer):
+	class Meta:
+		model = Abogado
+		fields = '__all__'
+
+class EmailSerializers(serializers.ModelSerializer):
+	class Meta:
+		model = Email
+		fields = '__all__'

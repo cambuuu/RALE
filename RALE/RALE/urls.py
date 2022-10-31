@@ -14,6 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
+from django.conf import settings
 from django.urls import path,include,re_path
 from rest_framework import routers
 from rest_framework import permissions
@@ -47,5 +48,7 @@ schema_view = get_schema_view(
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include(router.urls)),
+    path('gestion/',include('API_Opens.urls')),
+    path('web/',include('ServicioWEB.urls')),
     re_path(r'documentacion/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 ]
