@@ -1,18 +1,19 @@
 #pip install -U scikit-learn scipy matplotlib
 import imaplib, email
-import joblib
+import joblib ,sys
 
 def clasificar(correo):
     data = [correo]
-    vector = joblib.load('vectorizer.joblib')
-    clasificador = joblib.load('SVC.joblib')
+    ruta = sys.path
+    vector = joblib.load(ruta[0]+'/vectorizer.joblib')
+    clasificador = joblib.load(ruta[0]+'/SVC.joblib')
     data = vector.transform(data)
     valor = clasificador.predict(data)
     return valor
 
 def connect(email):
     imap = imaplib.IMAP4_SSL("imap.gmail.com")
-    password= 'mzfzqybucciwgmou'
+    password= 'jkyaxuzoltendsmn'
     imap.login(email, password)
     return imap
 

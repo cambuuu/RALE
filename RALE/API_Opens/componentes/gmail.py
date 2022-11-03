@@ -1,5 +1,5 @@
 from __future__ import print_function
-import os.path
+import os.path, sys
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -10,7 +10,8 @@ from email.message import EmailMessage
 # If modifying these scopes, delete the file token.json.
 
 def create_service():
-    CLIENT_SECRET_FILE ='credenciales.json'
+    ruta = sys.path
+    CLIENT_SECRET_FILE = ruta[0]+'/credenciales.json'
     API_NAME ='gmail'
     API_VERSION='v1'
     SCOPES =['https://mail.google.com/']
@@ -24,7 +25,7 @@ def create_service():
             flow = InstalledAppFlow.from_client_secrets_file(
                 CLIENT_SECRET_FILE, SCOPES)
             creds = flow.run_local_server(port=0)
-        with open('token.json', 'w') as token:
+        with open(ruta[0]+'/token.json', 'w') as token:
             token.write(creds.to_json())
     service = build(API_NAME, API_VERSION, credentials=creds)
 

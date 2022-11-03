@@ -7,7 +7,7 @@ from gmail import crear_borrador
 
 def Automatizacion():
     username = 'portafolio.duocuc.2022@gmail.com'
-    password = 'mzfzqybucciwgmou'
+    password = 'jkyaxuzoltendsmn'
     imap = imaplib.IMAP4_SSL("imap.gmail.com")
     imap.login(username, password)
     status, mensajes = imap.select("INBOX")
