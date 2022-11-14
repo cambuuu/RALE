@@ -1,13 +1,12 @@
 from __future__ import print_function
-import os.path, sys
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from email.message import EmailMessage
 from bs4 import BeautifulSoup
-from db import migracion_datos, consulta_plantilla
-import base64, joblib, email, sys
+from db import migracion_datos,consulta_plantilla
+import base64, os.path, sys, joblib
 
 def create_service():
     ruta = sys.path
@@ -33,46 +32,56 @@ def create_service():
 
 def crear_etiqueta():
     service = create_service()
-    label_body = {"name": "Aplica","messageListVisibility": "show","labelListVisibility": "labelShow",}
-    service.users().labels().create(userId='me', body=label_body).execute()
-    label_body = {"name": "No Aplica","messageListVisibility": "show","labelListVisibility": "labelShow",}
-    service.users().labels().create(userId='me', body=label_body).execute()
+    nombre_etiqueta = ['Nuevos(RALE)','Por Enviar','No Aplica']
+    for i in range(3):
+        cuerpo_etiqueta = {'name': nombre_etiqueta[i], 'labelListVisibility'   : 'labelShow', 'messageListVisibility' : 'show'}
+        crear = service.users().labels().create(userId = 'me', body = cuerpo_etiqueta).execute()
 
-def mostrar_etiqueta():
+def get_etiqueta():
     service = create_service()
-    results = service.users().labels().list(userId='me').execute()
-    labels = results.get('labels', [])
-
-    etiquetas = []
-    for label in labels:
-        nombre = label['id']
-        etiquetas.append(nombre)
-    if len(etiquetas) == 14:
+    resultado = service.users().labels().list(userId = 'me').execute()
+    etiqueta = resultado.get('labels',[])
+    total_etiqueta = []
+    for labels in etiqueta:
+        total_etiqueta.append(labels['id'])
+    if len(total_etiqueta) == 14:
         crear_etiqueta()
-    else:
-        pass
 
-def crear_borrador(cuerpo,cliente,asunto,solicitud):
+    etiquetas_nuevas = [total_etiqueta[-3],total_etiqueta[-2],total_etiqueta[-1]]
+    return etiquetas_nuevas
+
+def crear_borrador(cuerpo,asunto,cliente,solicitud):
     service = create_service()
-    body = "En relación al asunto:\n\n<"+str(solicitud)+">\n\n"+cuerpo
+    body = "Estimando,\nEspero se encuentre bien, le comento que su solicitud con el siguiente asunto:\n\n<"+solicitud+">\n\n"\
+          + cuerpo
     message = EmailMessage()
-    message['from'] = 'portafolio.duocuc.2022@gmail.com'
-    message['to'] = str(cliente)
-    message['subject'] = str(asunto)
+    message['from'] = 'opens.rale.2022@gmail.com'
+    message['to'] = cliente
+    message['subject'] = asunto
     message.set_content(body)
     encoded_message = base64.urlsafe_b64encode(message.as_bytes()).decode()
     create_message = {'message': {'raw': encoded_message}}
     drafts =  service.users().drafts().create(userId='me',body=create_message).execute()
 
-def leer_email():
+def mover_email():
     service = create_service()
-    resultado = service.users().messages().list(userId = 'me', labelIds = ['INBOX'], q = 'is:unread', maxResults = 2).execute()
-    emails = resultado.get('messages',[])
-    data_email = []
-    for msg in emails:
+    labels = get_etiqueta()
+    resultado = service.users().messages().list(userId = 'me', labelIds= ['INBOX'], q = 'is:unread', maxResults = 1).execute()
+    mensaje = resultado.get('messages', [])
+    for id in mensaje:
+        service.users().messages().modify(userId = 'me', id = id['id'], body = {'removeLabelIds':['INBOX'], 'addLabelIds':[labels[0]]}).execute()
+
+
+def get_email():
+    service = create_service()
+    labels = get_etiqueta()
+    msj = service.users().messages().list(userId='me', labelIds = [labels[0]], q = 'is:unread').execute()
+    messages = msj.get('messages',[])
+    data = []
+    for id in messages:
         temp = []
-        rst = service.users().messages().get(userId='me', id=msg['id']).execute()
-        payload = rst['payload']['headers']
+        result = service.users().messages().get(userId='me', id = id['id']).execute()
+        payload = result['payload']['headers']
         for value in payload:
             if value['name'] == 'From':
                 name = value['value']
@@ -83,49 +92,54 @@ def leer_email():
             if value['name'] == 'Subject':
                 asunto = value['value']
                 temp.append(asunto)
-        payload = rst['payload']
+        payload = result['payload']
         parts = payload.get('parts')[0]
-        data = parts['body']['data']
-        data = data.replace("-","+").replace("_","/")
-        decoded_data = base64.b64decode (bytes(data, 'UTF-8'))
-        soup = BeautifulSoup(decoded_data , "lxml")
-        mssg_body = soup.body()
-        temp.append(mssg_body)
-        temp.append(rst['id'])
-        data_email.append(temp)
+        cuerpo = parts['body']['data']
+        cuerpo = cuerpo.replace("-","+").replace("_","/")
+        decoded_cuerpo = base64.b64decode(bytes(cuerpo, 'UTF-8'))
+        soup = BeautifulSoup(decoded_cuerpo , "lxml")
+        mensaje = soup.body()
+        if len(mensaje) > 1 :
+            juntar_mensaje = ""
+            for i in mensaje:
+                juntar_mensaje = juntar_mensaje+" "+str(i)
+                print(juntar_mensaje)
+            temp.append(juntar_mensaje)
+        else:
+            temp.append(mensaje)
+        temp.append(id['id'])
+        data.append(temp)
 
-    return data_email
+    return data
 
-def clasificar():
+def clasificador():
+    informacion = get_email()
     ruta = sys.path
-    email = leer_email()
-    valor = []
-    for cuerpo in range(len(email)):
-        temp = email[cuerpo]
-        vector = joblib.load(ruta[0]+'/vectorizer.joblib')
-        clasificador = joblib.load(ruta[0]+'/SVC.joblib')
-        data = vector.transform([str(temp[3])])
-        resultado = clasificador.predict(data)
-        temp.append(resultado)
-        valor.append(temp)
-    return valor
+    vector = joblib.load(ruta[0]+'/vectorizer.joblib')
+    clasificador = joblib.load(ruta[0]+'/SVC.joblib')
+    for i in range(len(informacion)):
+        procesar = [str(informacion[i][3])]
+        data = vector.transform(procesar)
+        valor = clasificador.predict(data)
+        informacion[i].append(valor)
+    return informacion
 
 def main():
-    emails = clasificar()
+    mover_email()
     service = create_service()
+    data = clasificador()
+    etiqueta = get_etiqueta()
     plantilla = consulta_plantilla()
-    for i in range(len(emails)):
-        temp = emails[i]
-        cliente = temp[0]
-        asunto = plantilla[1]
-        cuerpo = plantilla[2]
-        solicitud = temp[2]
-        if temp[5] == 'Despido':
-            mostrar_etiqueta()
-            crear_borrador(cuerpo = cuerpo, cliente = cliente, asunto = asunto, solicitud = solicitud)
-            service.users().messages().modify(userId='me', id=temp[4] , body={ 'removeLabelIds': ['UNREAD']}).execute()
-            service.users().messages().modify(userId='me', id=temp[4] , body={ 'addLabelIds': ['Label_11']}).execute()
+    for i in range(len(data)):
+        email = data[i]
+        if email[5] == 'Despido':
+            asunto = plantilla[0]
+            cuerpo = plantilla[1]
+            cliente = email[0]
+            solicitud = email[2]
+            crear_borrador(cuerpo = cuerpo, asunto = asunto,cliente = cliente, solicitud = solicitud)
+            service.users().messages().modify(userId = 'me', id = email[4], body = {'removeLabelIds':['UNREAD'],'addLabelIds': [etiqueta[1]]}).execute()
         else:
-            service.users().messages().modify(userId='me', id=temp[4] , body={ 'removeLabelIds': ['UNREAD']}).execute()
-            service.users().messages().modify(userId='me', id=temp[4] , body={ 'addLabelIds': ['Label_12']}).execute()
-        migracion_datos(datos = temp)
+            service.users().messages().modify(userId = 'me', id = email[4], body = {'removeLabelIds':['UNREAD'],'addLabelIds': [etiqueta[2]]}).execute()
+
+mover_email()
