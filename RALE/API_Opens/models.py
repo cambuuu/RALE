@@ -1,5 +1,9 @@
+from re import A
+from statistics import mode
 from django.db import models
 from django.conf import settings
+from django.contrib.auth.models import User
+from django.db.models.signals import post_save
 # Create your models here.
 
 class Email(models.Model):
@@ -29,19 +33,25 @@ class Cliente(models.Model):
 	apellido_cliente = models.CharField(max_length = 200)
 	fono_cliente = models.CharField(max_length = 200)
 	direccion_cliente = models.CharField(max_length = 200)
-	id_email = models.ForeignKey('Email' , on_delete = models.SET_NULL, null = True)
-	usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete = models.CASCADE)
+	user= models.OneToOneField(User, on_delete= models.CASCADE)
 
 	class Meta:
 		db_table = 'Cliente'
 
 	def __str__(self):
-		return self.nombre_cliente
+		return f'Cliente de {self.user.username}'
+
+def createCliente(sender,instance, created, **kwargs,):
+		if created:
+			Cliente.objects.create(user=instance)
+			Abogado.objects.create(user=instance)
+post_save.connect(createCliente, sender=User)
 
 class Bitacora_usuario(models.Model):
 	fecha = models.DateField()
 	hora = models.DateTimeField()
 	detalle_bitacora = models.CharField(max_length = 200)
+	usuario = models.OneToOneField(User, on_delete= models.CASCADE)
 
 	class Meta:
 		db_table = 'Bitacora_usuario'
@@ -55,13 +65,14 @@ class Abogado(models.Model):
 	fono_abogado = models.CharField(max_length = 200)
 	direccion_abogado = models.CharField(max_length = 200)
 	email_abogado = models.CharField(max_length = 200)
-	usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete = models.CASCADE)
+	user = models.OneToOneField(User, on_delete= models.CASCADE)
 
 	class Meta:
 		db_table = 'Abogado'
 
 	def __str__(self):
-		return self.nombre_abogado
+		return f'Abogado de {self.user.username}'
+
 
 class Solicitud(models.Model):
 	descripcion= models.CharField(max_length = 200)
@@ -77,14 +88,17 @@ class Solicitud(models.Model):
 		return self.descripcion
 
 class Documento(models.Model):
-	fecha_documento = models.DateField()
-	solicitud = models.ForeignKey('Solicitud' , on_delete = models.SET_NULL, null = True)
+	titulo = models.CharField(max_length = 200)
+	documento = models.FileField(upload_to = "Uploaded Files/")
+	fecha_documento = models.DateTimeField(auto_now = True)
+	user= models.ForeignKey(User, on_delete=models.CASCADE)
 
 	class Meta:
 		db_table = 'Documento'
 
 	def __str__(self):
-		return self.fecha_documento
+		return f'Documento de {self.user.username}'
+	
 
 class Bitacora_solicitud(models.Model):
 	fecha_solicitud = models.DateField()

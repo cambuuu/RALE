@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'ServicioWEB',
     'rest_framework',
     'drf_yasg',
+    'crispy_forms',
 ]
 
 MIDDLEWARE = [
@@ -111,7 +112,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'es-CL'
 
 TIME_ZONE = 'UTC'
 
@@ -121,9 +122,13 @@ USE_L10N = True
 
 #USE_TZ = True
 
+MEDIA = 'media/'
+MEDIA_ROOT= os.path.join(BASE_DIR, 'media')
+LOGIN_URL= 'signin'
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
-STATIC_URL = '/static/'
+STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
