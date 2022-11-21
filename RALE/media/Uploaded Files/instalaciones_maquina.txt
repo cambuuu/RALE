@@ -1,0 +1,38 @@
+MAQUINA--------------------------------------------------------------------------------
+
+sudo apt update
+
+sudo apt upgrade -y
+
+sudo apt install python3-pip
+
+sudo apt-get install postfix
+
+PYTHON-------------------------------------------------------------------------------------
+
+pip install djangorestframework
+
+pip install django
+
+pip install -U drf-yasg
+
+pip install -U scikit-learn scipy matplotlib
+
+pip install --upgrade google-api-python-client google-auth-httplib2 google-auth-oauthlib
+
+pip install psycopg2
+
+pip install -U scikit-learn==1.0.2 ----- version antigua para funcionar
+
+
+Base de dato postgres--------------------------------------------------------------------
+
+
+sudo apt install python3-pip python3-dev libpq-dev postgresql postgresql-contrib
+
+sudo apt install postgresql postgresql-client
+
+clave de postgres:opens2022
+usuario: postgres
+
+intarface: sudo apt -y install phppgadmin php-pgsql
