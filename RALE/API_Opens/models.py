@@ -51,7 +51,7 @@ class Bitacora_usuario(models.Model):
 	fecha = models.DateField()
 	hora = models.DateTimeField()
 	detalle_bitacora = models.CharField(max_length = 200)
-	usuario = models.OneToOneField(User, on_delete= models.CASCADE)
+	user= models.OneToOneField(User, on_delete= models.CASCADE)
 
 	class Meta:
 		db_table = 'Bitacora_usuario'
@@ -98,7 +98,6 @@ class Documento(models.Model):
 
 	def __str__(self):
 		return f'Documento de {self.user.username}'
-	
 
 class Bitacora_solicitud(models.Model):
 	fecha_solicitud = models.DateField()

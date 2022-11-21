@@ -6,7 +6,7 @@
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Document</title>
+  <title>RALE</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" />
@@ -32,7 +32,7 @@
           <a class="nav-link" href="/signup/">Registrarse</a>
           {% else %}
             <a class="nav-link active" aria-current="page" href="/ahome/">Home</a>
-            <a class="nav-link" href="{% url 'modificarabogado' request.user.id %}">Editar perfil</a>
+            <a class="nav-link" href="{% url 'ServicioWEB:modificarabogado' request.user.id %}">Editar perfil</a>
             <a class="nav-link" href="/signout/">Logout</a>
           {% endif %}
           

@@ -27,9 +27,9 @@ def signin(request):
         login(request, user)
         user = request.user
         if user.groups.filter(name='cliente').exists():
-            return redirect(to='hola')
+            return redirect(to='ServicioWEB:hola')
 
-        return redirect(to='ahome')
+        return redirect(to='ServicioWEB:ahome')
 
 
 def signup(request):
@@ -47,7 +47,7 @@ def signup(request):
                 user.groups.add(group)
                 user.save()
                 messages.success(request, "Cliente Agregado Correctamente")
-                return redirect(to='ahome')
+                return redirect(to='ServicioWEB:ahome')
             except IntegrityError:
                 return render(request, 'signup.html', {"form": registrarForm, "error": "Usuario ya existe."})
 
@@ -83,7 +83,7 @@ def signup2(request):
 @login_required
 def signout(request):
     logout(request)
-    return redirect(to='signin')
+    return redirect(to='ServicioWEB:signin')
 
 @login_required
 def ahome(request):
@@ -93,7 +93,7 @@ def ahome(request):
     }
     user = request.user
     if user.groups.filter(name='cliente').exists():
-            return redirect(to='hola')
+            return redirect(to='ServicioWEB:hola')
     return render(request, 'ahome.html', data)
 
 
@@ -127,9 +127,9 @@ def modificarcliente(request,id):
             messages.success(request, "Perfil modificado Correctamente")
             user = request.user
             if user.groups.filter(name='cliente').exists():
-                return redirect(to='hola')
+                return redirect(to='ServicioWEB:hola')
             else:
-                return redirect(to='ahome')
+                return redirect(to='ServicioWEB:ahome')
     else:
         cform = agregarcliFrom(instance=cliente)
     return render(request, 'modificarperfil.html',data)
@@ -146,9 +146,9 @@ def modificarabogado(request, id):
             messages.success(request, "Perfil modificado Correctamente")
             user = request.user
             if user.groups.filter(name='cliente').exists():
-                return redirect(to='hola')
+                return redirect(to='ServicioWEB:hola')
             else:
-                return redirect(to='ahome')
+                return redirect(to='ServicioWEB:ahome')
     else:
         aform = agregaraboFrom(instance=abogado)
     return render(request, 'modificarperfila.html',data)
@@ -175,7 +175,7 @@ def uploadFile(request):
         documento.save()
         user = request.user
         if user.groups.filter(name='abogado').exists():
-            return redirect(to='signin')
+            return redirect(to='ServicioWEB:signin')
         return render(request, "cargarDoc.html", data)
     return render(request, "cargarDoc.html",data)
     
@@ -185,7 +185,7 @@ def eliminardoc(request,id):
     doc = get_object_or_404(Documento, id=id)
     doc.delete()
     messages.success(request, "Documento eliminado correctamente")
-    return redirect(to='cargarDoc')
+    return redirect(to='ServicioWEB:cargarDoc')
 
 
 def documentoscli(request, username):
@@ -196,7 +196,7 @@ def documentoscli(request, username):
                 user=Documento.objects.get(user=username)
             except:
                 messages.error(request, "El usuario no ha Subido archivos")
-                return redirect(to='ahome')
+                return redirect(to='ServicioWEB:ahome')
     else:
         current_user = request.user
     return render(request, 'documentoscli.html', {'user': user})

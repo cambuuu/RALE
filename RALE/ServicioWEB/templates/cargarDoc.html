@@ -20,7 +20,7 @@
                 <h2 class="mb-4">Documentos</h2>
                 <hr>
                 <form action="" method="POST" enctype="multipart/form-data" class="forr" >
-                    <form action="{% url 'cargarDoc' %}" method="POST" enctype="multipart/form-data">
+                    <form action="{% url 'ServicioWEB:cargarDoc' %}" method="POST" enctype="multipart/form-data">
                         {% csrf_token %}
                         <input class="input-group-text mb-2" type="text" name="fileTitle" placeholder="Nombre del documento" required>
                         
@@ -46,7 +46,7 @@
                                 <td>{{ file.fecha_documento }}</td>
                                 <td>
                                     <a href="{{ file.documento.url}}" class="btn btn-warning btn-sm" download >Descargar</a>
-                                    <a href="{% url 'eliminardoc' file.id%}" class="btn btn-danger btn-sm">Eliminar</a>
+                                    <a href="{% url 'ServicioWEB:eliminardoc' file.id%}" class="btn btn-danger btn-sm">Eliminar</a>
                                 </td>
                             </tr>
                         {% endfor %}
