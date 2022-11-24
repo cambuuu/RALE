@@ -88,8 +88,12 @@ def signout(request):
 @login_required
 def ahome(request):
     clientes = User.objects.filter(groups=1)
+    emails = Email.objects.all()
+    solicitud = Solicitud.objects.filter(prediccion = ['Despido'])
     data = {
-        'clientes': clientes
+        'clientes': clientes,
+        'email': emails,
+        'solicitud': solicitud,
     }
     user = request.user
     if user.groups.filter(name='cliente').exists():
@@ -118,7 +122,7 @@ def perfilcli(request, username=None):
 
 @login_required
 def modificarcliente(request,id):
-    cliente= get_object_or_404(Cliente, id=id)
+    cliente = Cliente.objects.get(user=id)
     data = {'cform':agregarcliFrom(instance=cliente)}
     if request.method == 'POST':
         cform = agregarcliFrom(data=request.POST, files=request.FILES, instance=cliente)
@@ -137,7 +141,7 @@ def modificarcliente(request,id):
 
 @login_required
 def modificarabogado(request, id):
-    abogado= get_object_or_404(Abogado, id=id)
+    abogado= get_object_or_404(Abogado, user=id)
     data = {'aform':agregaraboFrom(instance=abogado)}
     if request.method == 'POST':
         aform = agregaraboFrom(data=request.POST, files=request.FILES, instance=abogado)
@@ -153,6 +157,18 @@ def modificarabogado(request, id):
         aform = agregaraboFrom(instance=abogado)
     return render(request, 'modificarperfila.html',data)
 
+
+@login_required
+def detalle_email(request,id):
+    email = Email.objects.get(id = id)
+    data = {'email' : email}
+    return render(request, 'detalle_email.html',data)
+
+@login_required
+def detalle_solicitud(request,id):
+    solicitud = Solicitud.objects.get(id = id)
+    data = {'solicitud' : solicitud}
+    return render(request, 'detalle_solicitud.html', data)
 
 @login_required
 def hola(request):

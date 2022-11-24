@@ -47,17 +47,19 @@ def createCliente(sender,instance, created, **kwargs,):
 			Abogado.objects.create(user=instance)
 post_save.connect(createCliente, sender=User)
 
-class Bitacora_usuario(models.Model):
-	fecha = models.DateField()
-	hora = models.DateTimeField()
-	detalle_bitacora = models.CharField(max_length = 200)
-	user= models.OneToOneField(User, on_delete= models.CASCADE)
+class Bitacora(models.Model):
+	nombretabla = models.CharField(max_length = 50)
+	operacion = models.CharField(max_length = 20)
+	valoranterior = models.TextField()
+	nuevovalor = models.TextField()
+	updatedate = models.DateTimeField(auto_now = True)
+	usuario = models.CharField(max_length = 20)
 
 	class Meta:
-		db_table = 'Bitacora_usuario'
+		db_table = 'Bitacora'
 
 	def __str__(self):
-		return self.fecha
+		return self.usuario
 
 class Abogado(models.Model):
 	nombre_abogado = models.CharField(max_length = 200)
@@ -76,7 +78,7 @@ class Abogado(models.Model):
 
 class Solicitud(models.Model):
 	descripcion= models.CharField(max_length = 200)
-	fecha =  models.DateTimeField()
+	fecha =  models.DateTimeField(auto_now = True)
 	prediccion = models.CharField(max_length = 200)
 	id_email = models.ForeignKey('Email' , on_delete = models.SET_NULL, null = True)
 	id_abogado = models.ForeignKey('Abogado' , on_delete = models.SET_NULL, null = True)
@@ -98,16 +100,3 @@ class Documento(models.Model):
 
 	def __str__(self):
 		return f'Documento de {self.user.username}'
-
-class Bitacora_solicitud(models.Model):
-	fecha_solicitud = models.DateField()
-	hora_solicitud = models.DateTimeField()
-	detalle_solicitud = models.CharField(max_length = 200)
-	estado_solicitud = models.CharField(max_length = 200)
-	id_solicitud = models.ForeignKey('Solicitud' , on_delete = models.SET_NULL, null = True)
-
-	class Meta:
-		db_table = 'Bitacora_solicitud'
-
-	def __str__(self):
-		return self.estado_solicitud

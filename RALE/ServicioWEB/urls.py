@@ -6,7 +6,7 @@ from django.conf.urls.static import static
 app_name = 'ServicioWEB'
 
 urlpatterns = [
-    path('',views.signin, name='signin'), 
+    path('',views.signin, name='signin'),
     path('signup/',views.signup, name='signup'),
     path('signup2/',views.signup2, name='signup2'),
     path('signout/',views.signout, name='signout'),
@@ -19,6 +19,10 @@ urlpatterns = [
     path('perfilcli/<str:username>/',views.perfilcli, name='perfilcli'),
     path('modificarperfilc/<id>',views.modificarcliente, name='modificarcliente'),
     path('modificarperfila/<id>',views.modificarabogado, name='modificarabogado'),
+
+    #!DETALLE
+    path('detalle/email/<id>/', views.detalle_email, name='detalle_email'),
+    path('detalle/solicitud/<id>/', views.detalle_solicitud, name='detalle_solicitud'),
 
     #!CLIENTE
     path('hola/',views.hola, name='hola'),

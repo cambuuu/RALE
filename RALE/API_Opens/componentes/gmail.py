@@ -5,7 +5,7 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from email.message import EmailMessage
 from bs4 import BeautifulSoup
-from db import migracion_datos,consulta_plantilla
+from db import migracion_datos,consulta_plantilla,migracion_solicitud,consulta_abogado,registro_email
 import base64, os.path, sys, joblib
 
 def create_service():
@@ -103,7 +103,6 @@ def get_email():
             juntar_mensaje = ""
             for i in mensaje:
                 juntar_mensaje = juntar_mensaje+" "+str(i)
-                print(juntar_mensaje)
             temp.append(juntar_mensaje)
         else:
             temp.append(mensaje)
@@ -111,6 +110,7 @@ def get_email():
         data.append(temp)
 
     return data
+
 
 def clasificador():
     informacion = get_email()
@@ -141,5 +141,12 @@ def main():
             service.users().messages().modify(userId = 'me', id = email[4], body = {'removeLabelIds':['UNREAD'],'addLabelIds': [etiqueta[1]]}).execute()
         else:
             service.users().messages().modify(userId = 'me', id = email[4], body = {'removeLabelIds':['UNREAD'],'addLabelIds': [etiqueta[2]]}).execute()
-
+        migracion_datos(datos = email)
+        condicion = email[1]
+        descripcion = 'Pendiente'
+        id_email = registro_email(condicion = condicion)
+        id_abogado = consulta_abogado()
+        prediccion = email[5]
+        solicitud = [descripcion,prediccion,id_email,id_abogado]
+        migracion_solicitud(data = solicitud)
 mover_email()
