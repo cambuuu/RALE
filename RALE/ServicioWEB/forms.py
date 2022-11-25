@@ -2,7 +2,7 @@ from statistics import mode
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django import forms
-from API_Opens.models import Cliente, Abogado
+from API_Opens.models import Cliente, Abogado, Solicitud
 
 class registrarForm(UserCreationForm):
     class Meta:
@@ -19,3 +19,8 @@ class agregaraboFrom(forms.ModelForm):
     class Meta:
         model = Abogado
         fields = ['nombre_abogado','apellido_abogado','fono_abogado','direccion_abogado','email_abogado']
+
+class SolicitudForm(forms.ModelForm):
+    class Meta:
+        model = Solicitud
+        fields = ['descripcion']

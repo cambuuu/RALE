@@ -9,7 +9,7 @@ from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth.models import Group, User
 from django.db import IntegrityError
 from django.shortcuts import get_object_or_404, redirect, render
-from .forms import agregarcliFrom, registrarForm, agregaraboFrom
+from .forms import agregarcliFrom, registrarForm, agregaraboFrom, SolicitudForm
 from API_Opens.models import *
 from API_Opens.serializers import *
 
@@ -169,6 +169,18 @@ def detalle_solicitud(request,id):
     solicitud = Solicitud.objects.get(id = id)
     data = {'solicitud' : solicitud}
     return render(request, 'detalle_solicitud.html', data)
+
+@login_required
+def actualizar_solicitud(request,id):
+    solicitud = Solicitud.objects.get(id = id)
+    datos = {'solicitud': SolicitudForm(instance=solicitud),
+             'detalle': solicitud}
+    if request.method == 'POST':
+        formulario = SolicitudForm(data=request.POST, instance=solicitud)
+        if formulario.is_valid():
+            formulario.save()
+        return redirect(to='ServicioWEB:ahome')
+    return render(request,'actualizar_solicitud.html',datos)
 
 @login_required
 def hola(request):

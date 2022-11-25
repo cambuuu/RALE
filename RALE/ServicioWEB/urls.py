@@ -24,6 +24,9 @@ urlpatterns = [
     path('detalle/email/<id>/', views.detalle_email, name='detalle_email'),
     path('detalle/solicitud/<id>/', views.detalle_solicitud, name='detalle_solicitud'),
 
+    #!ACTUALIZAR
+    path('actualizar/solicitud/<id>/', views.actualizar_solicitud, name='actualizar_solicitud'),
+
     #!CLIENTE
     path('hola/',views.hola, name='hola'),
 
